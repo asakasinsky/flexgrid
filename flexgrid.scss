@@ -1,0 +1,365 @@
+@charset "UTF-8";
+/**
+ * Based on:
+ *
+ * sass-mediaqueries
+ * https://github.com/paranoida/sass-mediaqueries/blob/master/_media-queries.scss
+ *
+ * BEM Grid
+ * http://verybigman.github.io/bem-grid/promo.pages/index/index.html
+ *
+ * philipwalton/flexbugs
+ * https://github.com/philipwalton/flexbugs
+ *
+ * =============================================================================
+ *
+ *
+ * Browsers support
+ * All features work in: IE 10+, FF 25+, Chrome 28+, Safari 7+, Opera 12.1+,
+ * iOS 7.1+, Android Browser 4.1+, Chrome for Android 37+.
+ *
+ * For support old browsers i made degradation blocks and in future this grid maybe support IE 8+.
+ */
+
+
+
+$total_columns: 12;
+$ctx: '.row__col';
+
+/*
+* width: 16px * 30em = 480
+*
+* @media screen and (max-width: 960px)
+*  если у пользователя экран меньше или равен 960 пикселей
+*/
+
+/*
+* PRINTER:
+* width: 16px * 30em = 480
+* (namespase, min-width, max-width)
+*/
+$print: (p, 'print', 30em);
+/*
+* SMALL DISPLAYS:
+* width: 16px * 30em = 480
+* (namespase, min-width, max-width)
+*/
+$small: (s, 'screen', 30em);
+/*
+* MEDIUM DISPLAYS:
+* 481px - 768px
+* (namespase, min-width, max-width)
+*/
+$medium: (m, 30.063em, 48em);
+
+/*
+* Regular DISPLAYS:
+* 769px - 1024px
+* (namespase, min-width, max-width)
+*/
+$regular: (r, 48.063em, 64em);
+
+/*
+* LARGE DISPLAYS:
+* 1025px - 1440px
+* (namespase, min-width, max-width)
+*/
+$large: (l, 64.063em, 90em);
+
+/*
+* XLARGE DISPLAYS:
+* 1441px - 1920px
+* (namespase, min-width, max-width)
+*/
+$xlarge: (xl, 90.063em, 120em);
+
+/*
+* XXLARGE DISPLAYS:
+* 1920px - more-more px
+* (namespase, min-width, max-width)
+*/
+$xxlarge: (xxl, 120.063em, 99999999em);
+
+
+
+$bp-namespace-obj: ( $print, $small, $medium, $regular, $large, $xlarge, $xxlarge ) !default;
+
+
+/**
+ * Screen mixins
+ */
+
+@mixin screen($resMin, $resMax) {
+    @media screen and (min-width: $resMin) and (max-width: $resMax) {
+        @content;
+    }
+}
+
+@mixin max-screen($res) {
+    @media screen and (max-width: $res) {
+        @content;
+    }
+}
+
+@mixin min-screen($res) {
+    @media screen and (min-width: $res) {
+        @content;
+    }
+}
+
+
+/**
+ * Grid
+ */
+
+@function get-col-percent($column-num) {
+    @return percentage($column-num / $total_columns);
+}
+
+@mixin col {
+    padding-left: 0;
+    padding-right: 0;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-flex: 0;
+    -webkit-flex-grow: 0;
+    -ms-flex: 0;
+    flex-grow: 0;
+}
+
+@mixin grid_alignment($namespace) {
+    .row_#{$namespace}al {
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+        -ms-flex-pack: start;
+        justify-content: flex-start;
+        text-align: start;
+    }
+    .row_#{$namespace}ac {
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .row_#{$namespace}ar {
+        -webkit-box-pack: end;
+        -webkit-justify-content: flex-end;
+        -ms-flex-pack: end;
+        justify-content: flex-end;
+        text-align: end;
+    }
+    .row_#{$namespace}vat {
+        -webkit-box-align: start;
+        -webkit-align-items: flex-start;
+        -ms-flex-align: start;
+        align-items: flex-start;
+    }
+    .row_#{$namespace}vam {
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+    }
+    .row_#{$namespace}vab {
+        -webkit-box-align: end;
+        -webkit-align-items: flex-end;
+        -ms-flex-align: end;
+        align-items: flex-end;
+    }
+}
+
+@mixin grid($namespace) {
+    /**
+     * Width
+     */
+    @for $i from 1 through $total_columns {
+        #{$ctx}_#{$namespace}w_#{$i} {
+            @include col;
+            flex-basis: get-col-percent($i);
+            width:  get-col-percent($i);
+        }
+    }
+
+    /**
+     * Offset
+     */
+    @for $i from 1 through $total_columns {
+        #{$ctx}_#{$namespace}o_#{$i} {
+            @include col;
+            flex-shrink: 0;
+            margin-left: get-col-percent($i);
+        }
+    }
+
+    #{$ctx}_#{$namespace} {
+        -webkit-box-flex: 1;
+        -webkit-flex-grow: 1;
+        -ms-flex: 1;
+        flex-grow: 1;
+        -webkit-flex-basis: 0;
+        flex-basis: 0;
+        width: 100%;
+    }
+
+    #{$ctx}_#{$namespace}of {
+        -webkit-box-ordinal-group: 0;
+        -webkit-order: -1;
+        -ms-flex-order: -1;
+        order: -1;
+    }
+    #{$ctx}_#{$namespace}ol {
+        -webkit-box-ordinal-group: 2;
+        -webkit-order: 1;
+        -ms-flex-order: 1;
+        order: 1;
+    }
+}
+
+/**
+ * Row
+ */
+.frow {
+    padding-left: 0;
+    padding-right: 0;
+    margin: 0;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+
+    & .frow {
+        padding: 0;
+    }
+
+    &__col {
+        @include col;
+        -webkit-flex-shrink: 0;
+        flex-shrink: 0;
+        -webkit-flex-basis: 100%;
+        flex-basis: 100%;
+        width: 100%;
+    }
+
+    &_no-flexbox {
+        position: relative;
+        display: inline-block;
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        white-space: normal;
+        overflow: hidden;
+        /* «удаляем» отступы между нодами */
+        font-size: 0;
+
+        & .row__col {
+            font-size: 16px;
+            font-size: 1rem;
+            position: relative;
+            display: inline-block;
+            box-sizing: border-box;
+            list-style: none;
+            vertical-align: top;
+            text-align: left;
+
+            /* эмуляция inline-block для IE6-7*/
+            //display : inline;
+            //zoom : 1;
+        }
+
+        & .row__col_s {
+          position: relative;
+          width: auto;
+          display: table-cell;
+        }
+    }
+}
+
+/**
+ * Generate the Grid Alignment
+ */
+@each $val in $bp-namespace-obj {
+    @if nth($val, 2) == 'print' {
+        $namespace: nth($val, 1);
+        @media only print {
+            @include grid_alignment($namespace);
+        }
+    } @else if nth($val, 2) == 'screen' {
+        $namespace: nth($val, 1);
+        @media only screen {
+            @include grid_alignment($namespace);
+        }
+    } @else if not (nth($val, 2) == 'screen') and not (nth($val, 2) == 'print'){
+
+        $namespace: nth($val, 1);
+        $size: nth($val, 2);
+
+        @include min-screen(#{$size}) {
+            @include grid_alignment($namespace);
+        }
+    }
+}
+
+/**
+ * Generate the Grid
+ */
+@each $val in $bp-namespace-obj {
+    @if nth($val, 2) == 'print' {
+        $namespace: nth($val, 1);
+        @media only print {
+            @include grid($namespace);
+            // hidden
+            #{$ctx}_#{$namespace}w_0 {
+              display: none !important;
+            }
+        }
+    } @else if nth($val, 2) == 'screen' and not (nth($val, 3) == 'screen') {
+        $namespace: nth($val, 1);
+        @media only screen {
+            @include grid($namespace);
+        }
+        // hidden
+        @include max-screen(nth($val, 3)) {
+          #{$ctx}_#{$namespace}w_0 {
+            display: none !important;
+          }
+        }
+    } @else if not (nth($val, 2) == 'screen') and not (nth($val, 2) == 'print') and not (nth($val, 3) == 'screen'){
+
+        $namespace: nth($val, 1);
+        $size: nth($val, 2);
+
+        @include min-screen(#{$size}) {
+            @include grid($namespace);
+        }
+
+        // hidden
+        @include screen(nth($val, 2), nth($val, 3)) {
+          #{$ctx}_#{$namespace}w_0 {
+            display: none;
+          }
+        }
+    }
+}
